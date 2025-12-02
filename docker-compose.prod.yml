@@ -1,0 +1,48 @@
+version: '3.8'
+
+# Production configuration with nginx reverse proxy
+services:
+  realesrgan-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: realesrgan-api
+    restart: unless-stopped
+    expose:
+      - "8000"
+    volumes:
+      - ./weights:/app/weights
+      - ./inputs:/app/inputs:ro
+      - ./results:/app/results
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - realesrgan-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: realesrgan-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - realesrgan-api
+    networks:
+      - realesrgan-network
+
+networks:
+  realesrgan-network:
+    driver: bridge
+

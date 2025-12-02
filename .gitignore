@@ -9,6 +9,46 @@ weights/*
 
 version.py
 
+# API and Docker runtime files
+*.log
+*.tmp
+*.cache
+inputs/*
+!inputs/.gitkeep
+results/*
+!results/.gitkeep
+
+# SSL certificates (если есть)
+ssl/*
+!ssl/.gitkeep
+
+# Локальные тестовые файлы (останутся у вас, но не попадут в git)
+test_images/
+local_test/
+*.test.jpg
+*.test.png
+
+# Локальная документация по развертыванию (остается у вас)
+DOCKER_SETUP.md
+UBUNTU_SETUP.md
+DEPLOY_FROM_GITHUB.md
+GIT_SETUP.md
+PUSH_TO_YOUR_REPO.md
+QUICKSTART_DOCKER.md
+INSTRUCTIONS.md
+
+# IDE и редакторы
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS файлы
+.DS_Store
+Thumbs.db
+desktop.ini
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
