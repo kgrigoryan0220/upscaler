@@ -27,12 +27,16 @@ WORKDIR /app
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install PyTorch with CUDA support first (largest package)
+# Используем совместимые версии PyTorch и torchvision
 RUN pip3 install --no-cache-dir --upgrade pip && \
-    pip3 install --no-cache-dir -r requirements.txt
+    pip3 install --no-cache-dir torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cu118
 
-# Install PyTorch with CUDA support
-RUN pip3 install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu118
+# Install Python dependencies (install basicsr separately to avoid space issues)
+RUN pip3 install --no-cache-dir basicsr>=1.4.2 && \
+    pip3 install --no-cache-dir facexlib>=0.2.5 gfpgan>=1.3.5 && \
+    pip3 install --no-cache-dir numpy opencv-python Pillow tqdm && \
+    pip3 install --no-cache-dir fastapi>=0.104.0 uvicorn[standard]>=0.24.0 python-multipart>=0.0.6
 
 # Copy application files
 COPY . .
