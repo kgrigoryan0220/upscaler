@@ -29,19 +29,31 @@ COPY requirements.txt .
 
 # Install PyTorch with CUDA support first (largest package)
 # Используем совместимые версии PyTorch и torchvision
-# Устанавливаем numpy и базовые зависимости ПЕРЕД torch
 RUN pip3 install --no-cache-dir --upgrade pip && \
-    pip3 install --no-cache-dir "numpy<2.0" && \
     pip3 install --no-cache-dir torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cu118
 
-# Install Python dependencies (install basicsr separately to avoid space issues)
-# Убеждаемся что numpy установлен и доступен
-RUN pip3 install --no-cache-dir opencv-python Pillow tqdm && \
-    python3 -c "import numpy; print(f'NumPy version: {numpy.__version__}')" && \
-    pip3 install --no-cache-dir basicsr>=1.4.2 && \
-    pip3 install --no-cache-dir facexlib>=0.2.5 gfpgan>=1.3.5 && \
-    pip3 install --no-cache-dir fastapi>=0.104.0 uvicorn[standard]>=0.24.0 python-multipart>=0.0.6
+# ===== КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Устанавливаем совместимые версии =====
+# 1. Сначала устанавливаем совместимую версию NumPy
+# 2. Потом устанавливаем остальные пакеты с указанием версий для совместимости
+RUN pip3 install --no-cache-dir \
+    numpy==1.24.3 \
+    basicsr==1.4.2 \
+    facexlib==0.3.0 \
+    gfpgan==1.3.8 \
+    opencv-python==4.8.1.78 \
+    Pillow==10.0.0 \
+    tqdm==4.66.1 \
+    fastapi==0.104.1 \
+    uvicorn[standard]==0.24.0 \
+    python-multipart==0.0.6
 
+
+# Alternative: если нужны последние версии, но с совместимым NumPy
+# RUN pip3 install --no-cache-dir numpy==1.24.3 && \
+#     pip3 install --no-cache-dir basicsr>=1.4.2 && \
+#     pip3 install --no-cache-dir facexlib>=0.2.5 gfpgan>=1.3.5 && \
+#     pip3 install --no-cache-dir "opencv-python<4.10" Pillow tqdm && \
+#     pip3 install --no-cache-dir fastapi>=0.104.0 uvicorn[standard]>=0.24.0 python-multipart>=0.0.6
 # Copy application files
 COPY . .
 
